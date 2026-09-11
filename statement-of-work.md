@@ -55,6 +55,72 @@ The `contacts` collection contains at least three documents in the `cse341` data
 
 The API must be tested locally first. Publishing the API to Render is part of the project submission and should be completed after the local endpoints work. Render environment variables must contain the same configuration names as the local `.env` file.
 
+## Implementation Report
+
+### 1. Set Up the Project and Database
+
+The project was initialized as an npm Node.js application. Express, CORS, dotenv, and the MongoDB driver were installed. The backend was organized into separate configuration, model, controller, route, and server files.
+
+The MongoDB connection is loaded from `backend/.env` using `MONGODB_URI` and `MONGODB_DB`. The selected database is `cse341`. The server connects to MongoDB before listening on the configured port.
+
+### 2. Import Data into the Database
+
+Three contact records were defined in `backend/data/contacts.js`. A repeatable import script was added at `backend/scripts/seedContacts.js` and exposed through:
+
+```powershell
+npm run seed
+```
+
+The script connects to MongoDB, writes the records into the `contacts` collection, and uses each email address as the upsert key. This prevents duplicate records when the command is run again.
+
+The import completed successfully with:
+
+```text
+Seeded 3 contacts into cse341.contacts. Total documents: 3
+```
+
+### 3. Complete the GET API Routes
+
+The following routes were implemented and tested:
+
+```text
+GET /contacts
+GET /contacts/:id
+GET /contacts?id=<id>
+```
+
+The model performs the MongoDB queries, the controller validates IDs and creates responses, and the route file maps URLs to controller functions. Local verification confirmed that the get-all route returned three contacts, both single-contact forms returned the matching contact, invalid IDs returned `400`, and unknown IDs returned `404`.
+
+### 4. Deploy the App to Render
+
+The application was deployed to Render as a Node web service. The Render service uses:
+
+```text
+Build Command: npm install
+Start Command: npm start
+Root Directory: blank
+```
+
+The Render environment uses `MONGODB_URI` and `MONGODB_DB=cse341` as config variables. Render supplies the runtime `PORT` value, which the server reads from `process.env.PORT`.
+
+The published API is:
+
+```text
+https://cse341-6gdb.onrender.com
+```
+
+The deployed health check, get-all route, URL-parameter route, and query-parameter route were verified successfully.
+
+## Problems Encountered and Resolutions
+
+- **Port conflict (`EADDRINUSE`):** The API was started more than once, so two Node processes attempted to use port `8080`. The existing `node backend/server.js` process was identified and stopped. The server was then started only once.
+- **PowerShell MongoDB import error:** PowerShell expanded MongoDB operators such as `$set` and `$in` while running an inline Node command. The import was moved into the reusable `seedContacts.js` script, which completed successfully.
+- **Incorrect initial SOW scope:** The SOW initially described the professional-profile activity and later contained duplicated YW content. It was replaced with a Contacts Part 1 SOW matching this assignment.
+- **Incomplete MVC separation:** The controller initially accessed the MongoDB collection directly. A dedicated `models/contactsModel.js` file was added, and the controller now handles validation and responses separately from database queries.
+- **Placeholder MongoDB profile data:** The earlier profile project used placeholder data and was removed from the Contacts backend. The Contacts API now reads only from the MongoDB `contacts` collection.
+
+No credentials are included in this report. The real MongoDB URI remains in the ignored local `backend/.env` file and must be entered as a Render config variable rather than committed to GitHub.
+
 ## API Endpoints
 
 ### Health Check
@@ -113,6 +179,7 @@ backend/
 
 - `config/db.js` owns the MongoDB connection.
 - `data/contacts.js` contains the seed records used during database setup.
+- `scripts/seedContacts.js` imports the seed records into MongoDB.
 - `models/contactsModel.js` contains contacts collection queries.
 - `controllers/contactsController.js` contains request validation and response logic.
 - `routes/contactsRoutes.js` defines the Contacts GET routes.
@@ -172,11 +239,15 @@ The following local work has been completed:
 - MongoDB connected successfully.
 - Database `cse341` contains a `contacts` collection.
 - Three contact documents were imported.
+- The repeatable `npm run seed` database import command was added.
 - `GET /contacts` returned HTTP `200` and three contacts.
 - `GET /contacts/:id` returned HTTP `200` for a valid MongoDB ID.
 - `GET /contacts?id=<id>` returned HTTP `200` for a valid MongoDB ID.
 - Invalid IDs returned HTTP `400`.
 - Unknown contact IDs returned HTTP `404`.
 - The backend uses separate config, model, controller, route, and server files.
+- Render health check returned the expected API message at `https://cse341-6gdb.onrender.com/`.
+- Render `GET /contacts` returned all three MongoDB contacts.
+- Render `GET /contacts/:id` returned the matching contact.
 
-Local implementation is complete. Render deployment, GitHub publication, and the Week 02 write endpoints remain future work for this assignment phase.
+Local and Render GET work is complete. GitHub publication, the required video, and the Week 02 write endpoints remain future work for this assignment phase.
