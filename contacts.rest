@@ -1,0 +1,17 @@
+@localUrl = http://localhost:8080
+
+### Health check
+GET {{localUrl}}/
+
+### Get all contacts
+GET {{localUrl}}/contacts
+
+### Get one contact by URL id
+# Replace the id below with an _id returned by the get-all request.
+GET {{localUrl}}/contacts/6aa34b363ad3b104d30061dd
+
+### Get one contact by query id
+GET {{localUrl}}/contacts?id=6aa34b363ad3b104d30061dd
+
+### Invalid id
+GET {{localUrl}}/contacts/not-an-object-id
