@@ -16,6 +16,7 @@ The following Week 01 work is complete:
 - Invalid and unknown ID responses implemented.
 - REST Client request file added.
 - API deployed and tested on Render.
+- Project connected to GitHub on the `main` branch.
 
 Detailed scope, implementation steps, testing evidence, and troubleshooting are documented in [statement-of-work.md](statement-of-work.md).
 
@@ -84,9 +85,19 @@ GET https://cse341-6gdb.onrender.com/contacts/6aa34b363ad3b104d30061dd
 GET https://cse341-6gdb.onrender.com/contacts?id=6aa34b363ad3b104d30061dd
 ```
 
+## GitHub and Security Verification
+
+The project is connected to a GitHub remote and has committed project history. Verification confirmed that `backend/.env`, `.env`, and `node_modules` are not tracked by Git. This keeps MongoDB credentials and generated dependencies out of the repository.
+
 ## Rubric Alignment
 
-- **API Endpoints:** all contacts and one contact by ID are retrieved from MongoDB.
-- **Deployment:** the API is published at the Render URL above.
-- **Security:** `backend/.env` and `node_modules` are excluded by `.gitignore`; Render uses environment config variables.
-- **Architecture:** database configuration, model, controller, routes, and server startup are separated into their own files.
+- **1. API Endpoints, 60 points:** `GET /contacts` retrieves all documents from MongoDB. `GET /contacts/:id` and `GET /contacts?id=<id>` retrieve and return one matching contact from MongoDB. These are the two requests to demonstrate in the video.
+- **2. Deployment, 10 points:** the same endpoints are available publicly w proving the application works outside the local machine.
+- **3. Security, 10 points:** the MongoDB URI is stored in the ignored `backend/.env` file locally. GitHub must contain neither `backend/.env` nor `node_modules`; Render receives the database values as environment config variables.
+- **4. Architecture, 20 points:** `backend/models/contactsModel.js` contains database queries, `backend/controllers/contactsController.js` handles validation and responses, `backend/routes/contactsRoutes.js` defines URL mappings, and `backend/server.js` connects the routes and database startup.
+
+The detailed implementation history, verification results, and troubleshooting are documented in [statement-of-work.md](statement-of-work.md).
+
+## MVC Note
+
+This is an API-only project, so there is no server-rendered View layer. The API returns JSON for future frontends and is tested with REST Client and Render. The Model, Controller, and route layers are separated as required by the rubric.

@@ -17,6 +17,55 @@ The Week 01 scope includes:
 
 The backend architecture follows the same layered MVC pattern used in a separate working project, but this project is limited to the Contacts requirements.
 
+## Course Step Completion
+
+### Set Up GitHub and Initialize Node Project
+
+The Node.js project was initialized with npm. The project contains `package.json`, `package-lock.json`, and the backend start script. The local project is connected to a GitHub repository through the `origin` remote on the `main` branch, which is also the source used for the Render deployment.
+
+### Push to GitHub and Start with Express
+
+Express was installed and configured in `backend/server.js`. The server starts through `npm start` and returns the health-check response from `GET /`. The project code has committed Git history and is connected to GitHub.
+
+### Install MongoDB and Import Data
+
+The MongoDB Atlas database `cse341` contains the `contacts` collection with three documents. Each document includes `firstName`, `lastName`, `email`, `favoriteColor`, and `birthday`. The repeatable import command is:
+
+```powershell
+npm run seed
+```
+
+### Connect the Node Project to MongoDB
+
+The connection is implemented in `backend/config/db.js`. The URI and database name are loaded from `backend/.env`, and the server connects to MongoDB before starting Express. The Contacts route is defined separately in `backend/routes/contactsRoutes.js`.
+
+### Add the Get and GetAll Endpoints
+
+Both required GET capabilities are complete:
+
+```text
+GET /contacts
+GET /contacts?id=<id>
+```
+
+The URL form below is also supported:
+
+```text
+GET /contacts/:id
+```
+
+The routes were tested locally and at the public Render URL.
+
+### Deploy and Test
+
+The application was deployed and tested at:
+
+```text
+https://cse341-6gdb.onrender.com
+```
+
+The health check, get-all endpoint, and both single-contact endpoint forms returned successful responses. Render uses `npm install` as its build command, `npm start` as its start command, and environment config variables for `MONGODB_URI` and `MONGODB_DB`.
+
 ## Contact Data
 
 Each contact document contains:
@@ -185,6 +234,8 @@ backend/
 - `routes/contactsRoutes.js` defines the Contacts GET routes.
 - `server.js` configures Express, connects the routes, connects to MongoDB, and starts the server.
 
+This project does not include a server-rendered View because the assignment is explicitly API-only. REST Client, future frontend applications, and other API consumers act as clients of the JSON responses. The Model, Controller, and route separation satisfies the backend MVC architecture expected for this project.
+
 ## Security Requirements
 
 - MongoDB credentials are stored in `backend/.env`.
@@ -250,4 +301,22 @@ The following local work has been completed:
 - Render `GET /contacts` returned all three MongoDB contacts.
 - Render `GET /contacts/:id` returned the matching contact.
 
-Local and Render GET work is complete. GitHub publication, the required video, and the Week 02 write endpoints remain future work for this assignment phase.
+Local, GitHub, and Render GET work is complete. The required video and the Week 02 write endpoints remain future work for this assignment phase.
+
+## Rubric Evidence Summary
+
+### 1. API Endpoints - 60 Points
+
+The API has both required GET capabilities. `GET /contacts` reads every document from MongoDB. `GET /contacts/:id` reads one document using its MongoDB ObjectId. The query form `GET /contacts?id=<id>` is also supported. These endpoints were tested locally and through Render.
+
+### 2. Deployment - 10 Points
+
+The API is published at `https://cse341-6gdb.onrender.com`. The health check, get-all route, URL-parameter route, and query-parameter route were tested at that public URL. The demonstration video should show the Render URL rather than only localhost.
+
+### 3. Security - 10 Points
+
+The MongoDB URI is stored in the local `backend/.env` file and is excluded by `.gitignore`. `node_modules` is also excluded. Render receives the database settings through environment config variables. Before submission, confirm on GitHub that neither `backend/.env` nor `node_modules` is present.
+
+### 4. Architecture - 20 Points
+
+The database connection is separated into `backend/config/db.js`, database queries are separated into `backend/models/contactsModel.js`, request handling is in `backend/controllers/contactsController.js`, URL mappings are in `backend/routes/contactsRoutes.js`, and `backend/server.js` connects the pieces and starts the application. This satisfies the rubric's MVC-style separation for an API-only project.
